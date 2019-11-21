@@ -1,5 +1,8 @@
 import solver
 
+sg = solver.NaiveSolver('sample.in')
+sg.solve('sample.out')
+
 g1 = solver.NaiveSolver('1.in')
 g1.solve('1.out')
 g2 = solver.NaiveSolver('2.in')
