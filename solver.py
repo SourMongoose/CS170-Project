@@ -64,6 +64,23 @@ class Solver:
             edges.append((i,prev[i]))
         return edges
 
+    def calcDropoffsAndDist(self, path):
+        dropoffs = {}
+        for h in self.homes:
+            drop = min(path, key=lambda l: self.dist[l][h])
+            if drop not in dropoffs:
+                dropoffs[drop] = []
+            dropoffs[drop].append(h)
+
+        totalDist = 0
+        for i in range(len(path) - 1):
+            totalDist += self.dist[path[i]][path[i+1]] * 2/3
+        for d in dropoffs:
+            for h in dropoffs[d]:
+                totalDist += self.dist[d][h]
+
+        return dropoffs, totalDist
+
     def solve(self, outputfile):
         # to be implemented
         pass
@@ -94,20 +111,118 @@ class NaiveSolver(Solver):
             path.extend(self.path[route[i]][route[i+1]][1:])
         return path
 
-    def solve(self, outputfile):
+    def solve(self, outputfile='output.out', output=True):
         self.FloydWarshall()
         MST = self.Prims()
         path = self.findPath(MST)
-        dropoffs = {}
-        for h in self.homes:
-            drop = min(path, key=lambda l: self.dist[l][h])
-            if drop not in dropoffs:
-                dropoffs[drop] = []
-            dropoffs[drop].append(h)
 
-        with open(outputfile, 'w') as f:
-            f.write(' '.join(self.names[i] for i in path)+'\n')
-            f.write(str(len(dropoffs.keys()))+'\n')
-            for k in dropoffs.keys():
-                f.write(self.names[k]+' ')
-                f.write(' '.join(self.names[i] for i in dropoffs[k])+'\n')
+        dropoffs, totalDist = self.calcDropoffsAndDist(path)
+
+        if output:
+            with open(outputfile, 'w') as f:
+                f.write(' '.join(self.names[i] for i in path)+'\n')
+                f.write(str(len(dropoffs.keys()))+'\n')
+                for k in dropoffs.keys():
+                    f.write(self.names[k]+' ')
+                    f.write(' '.join(self.names[i] for i in dropoffs[k])+'\n')
+
+        return totalDist
+
+
+class GreedyCristofidesSolver(Solver):
+    def minMatching(self, MST):
+        deg = [0]*self.L
+        for edge in MST:
+            a, b = edge[0], edge[1]
+            deg[a] += 1
+            deg[b] += 1
+
+        odd = []
+        for i in range(self.L):
+            if deg[i] % 2 == 1:
+                odd.append(i)
+
+        matching = []
+        unmatched = odd[:]
+        while unmatched:
+            mini = unmatched[0]
+            minj = unmatched[1]
+            for i in range(len(unmatched)):
+                for j in range(i+1,len(unmatched)):
+                    if self.dist[unmatched[i]][unmatched[j]] < self.dist[mini][minj]:
+                        mini = unmatched[i]
+                        minj = unmatched[j]
+            #print(unmatched)
+            unmatched.remove(mini)
+            unmatched.remove(minj)
+            matching.append((mini,minj))
+
+        return matching
+
+    def EulerTour(self, G):
+        adj = [set() for _ in range(self.L)]
+        for edge in G:
+            a, b = edge[0], edge[1]
+            adj[a].add(b)
+            adj[b].add(a)
+
+        def connected(start):
+            v = set()
+            v.add(start)
+            def dfs(i):
+                for e in adj[i]:
+                    if e not in v:
+                        v.add(e)
+                        dfs(e)
+            dfs(start)
+            for i in range(self.L):
+                if len(adj[i]) and i not in v:
+                    return False
+            return True
+
+        tour = [self.start]
+        while True:
+            stop = True
+            edges = list(adj[tour[-1]])
+            for b in edges:
+                adj[tour[-1]].remove(b)
+                if not connected(b):
+                    adj[tour[-1]].add(b)
+                else:
+                    tour.append(b)
+                    stop = False
+                    break
+            if stop:
+                break
+
+        return tour
+
+    def findPath(self, tour):
+        updated = []
+        for x in tour:
+            if x not in updated:
+                updated.append(x)
+        updated.append(tour[-1])
+        path = [updated[0]]
+        for i in range(len(updated)-1):
+            path.extend(self.path[updated[i]][updated[i+1]][1:])
+        return path
+
+    def solve(self, outputfile='output.out', output=True):
+        self.FloydWarshall()
+        MST = self.Prims()
+        MM = self.minMatching(MST)
+        ET = self.EulerTour(MST+MM)
+        path = self.findPath(ET)
+
+        dropoffs, totalDist = self.calcDropoffsAndDist(path)
+
+        if output:
+            with open(outputfile, 'w') as f:
+                f.write(' '.join(self.names[i] for i in path) + '\n')
+                f.write(str(len(dropoffs.keys())) + '\n')
+                for k in dropoffs.keys():
+                    f.write(self.names[k] + ' ')
+                    f.write(' '.join(self.names[i] for i in dropoffs[k]) + '\n')
+
+        return totalDist

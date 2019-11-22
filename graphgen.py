@@ -29,7 +29,7 @@ class DisjointSets:
         return self.root(p) == self.root(q)
 
 class Graph:
-    def __init__(self, L, H, E):
+    def __init__(self, L, H, E, mx=1e14):
         self.L = L
         self.H = H
         self.start = 0
@@ -41,7 +41,7 @@ class Graph:
 
         locations = []
         while len(locations) < L:
-            v = (random.randint(0,1e14), random.randint(0,1e14))
+            v = (random.randint(0,mx), random.randint(0,mx))
             if v not in locations:
                 locations.append(v)
 
