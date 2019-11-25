@@ -1,6 +1,6 @@
 import solver
 
-alg = solver.GreedyCristofidesSolver
+alg = solver.NaiveSolver
 
 g1 = alg('1.in')
 g1.solve('1.out')
