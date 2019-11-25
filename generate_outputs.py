@@ -1,7 +1,7 @@
 import solver
 import os
 
-alg = solver.NaiveSolver
+alg = solver.NaiveSolverCompress
 
 # create output directory
 try:
