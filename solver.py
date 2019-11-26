@@ -126,6 +126,84 @@ class Solver:
 
         return path
 
+    # compress cycles that are suboptimal on given path
+    # note: prioritizes smaller cycles
+    def compressCycles2(self, path):
+        change = True
+        while change:
+            change = False
+            L = len(path)
+            dropoffs = self.calcDropoffsAndDist(path)[0]
+
+            for l in range(2,L):
+                for i in range(L-l):
+                    j = i + l
+                    # cycle detected
+                    if path[i] == path[j]:
+                        # calculate distances
+                        drive = self.dist[path[i]][path[i+1]]
+                        walk = 0
+                        dropped = []
+                        checked = set()
+                        for k in range(i+1,j):
+                            drive += self.dist[path[k]][path[k+1]]
+                            if path[k] in dropoffs and path[k] not in checked:
+                                for h in dropoffs[path[k]]:
+                                    walk += self.dist[path[k]][h]
+                                    dropped.append(h)
+                                checked.add(path[k])
+
+                        # energy needed while taking cycle
+                        eyes = drive * 2/3 + walk
+                        # energy needed without cycle
+                        eno = sum(self.dist[path[i]][h] for h in dropped)
+
+                        if eno < eyes:
+                            path = path[:i] + path[j:]
+                            change = True
+                            break
+                if change:
+                    break
+
+        return path
+
+    # drive on edges that more than 1 TA take
+    def replaceWalkedEdges(self, path):
+        # find longest common prefix
+        def LCP(x, y):
+            i = 0
+            while len(y) > i < len(x) and x[i] == y[i]:
+                i += 1
+            return x[:i]
+
+        change = True
+        while change:
+            change = False
+            L = len(path)
+            dropoffs = self.calcDropoffsAndDist(path)[0]
+            checked = set()
+
+            for i in range(L):
+                p = path[i]
+                # check if multiple TAs are dropped off
+                if p not in checked and p in dropoffs and len(dropoffs[p]) > 1:
+                    paths = [self.path[p][h] for h in dropoffs[p]]
+                    lcp = [p]
+                    for x in paths:
+                        for y in paths:
+                            if x != y:
+                                p = LCP(x,y)
+                                if len(p) > len(lcp):
+                                    lcp = p
+                    if len(lcp) > 1:
+                        path = path[:i] + lcp + lcp[::-1][1:] + path[i+1:]
+                        change = True
+
+                if change:
+                    break
+
+        return path
+
     def solve(self, outputfile):
         # to be implemented
         pass
@@ -185,6 +263,31 @@ class NaiveSolverCompress(NaiveSolver):
 
         # check all cycles along path to see if compression is better
         path = self.compressCycles(path)
+
+        # calculate final dropoff locations
+        dropoffs, totalDist = self.calcDropoffsAndDist(path)
+
+        # output to file
+        if output:
+            with open(outputfile, 'w') as f:
+                f.write(' '.join(self.names[i] for i in path)+'\n')
+                f.write(str(len(dropoffs.keys()))+'\n')
+                for k in dropoffs.keys():
+                    f.write(self.names[k]+' ')
+                    f.write(' '.join(self.names[i] for i in dropoffs[k])+'\n')
+
+        return totalDist
+
+class NaiveSolverCompress2(NaiveSolver):
+    def solve(self, outputfile='output.out', output=True):
+        self.FloydWarshall()
+        MST = self.Prims()
+        path = self.findPath(MST)
+
+        # check all cycles along path to see if compression is better
+        path = self.compressCycles2(path)
+        # replace double walked edges
+        path = self.replaceWalkedEdges(path)
 
         # calculate final dropoff locations
         dropoffs, totalDist = self.calcDropoffsAndDist(path)
