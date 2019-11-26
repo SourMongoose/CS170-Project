@@ -187,6 +187,7 @@ class Solver:
                 p = path[i]
                 # check if multiple TAs are dropped off
                 if p not in checked and p in dropoffs and len(dropoffs[p]) > 1:
+                    checked.add(p)
                     paths = [self.path[p][h] for h in dropoffs[p]]
                     lcp = [p]
                     for x in paths:
@@ -200,6 +201,28 @@ class Solver:
                         change = True
 
                 if change:
+                    break
+
+        return path
+
+    # try to remove inefficient dropoff locations
+    def removeDropoffLocations(self, path):
+        change = True
+        while change:
+            change = False
+            L = len(path)
+            dropoffs, dist = self.calcDropoffsAndDist(path)
+
+            # list of dropoff locations
+            locs = [[path[i],i] for i in range(L) if (path[i] in dropoffs or i in [0,L-1])]
+
+            for i in range(1,len(locs)-1):
+                prev = locs[i-1]
+                next = locs[i+1]
+                newpath = path[:prev[1]] + self.path[prev[0]][next[0]] + path[next[1]+1:]
+                if self.calcDropoffsAndDist(newpath)[1] < dist:
+                    path = newpath
+                    change = True
                     break
 
         return path
@@ -286,8 +309,10 @@ class NaiveSolverCompress2(NaiveSolver):
 
         # check all cycles along path to see if compression is better
         path = self.compressCycles2(path)
+        # try to remove dropoff locations
+        path = self.removeDropoffLocations(path)
         # replace double walked edges
-        path = self.replaceWalkedEdges(path)
+        #path = self.replaceWalkedEdges(path)
 
         # calculate final dropoff locations
         dropoffs, totalDist = self.calcDropoffsAndDist(path)
