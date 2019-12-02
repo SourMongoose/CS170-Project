@@ -1,3 +1,5 @@
+import random
+
 class Solver:
     INF = 1e18
 
@@ -85,50 +87,8 @@ class Solver:
         return dropoffs, totalDist
 
     # compress cycles that are suboptimal on given path
-    def compressCycles(self, path):
-        change = True
-        while change:
-            change = False
-            L = len(path)
-            dropoffs = self.calcDropoffsAndDist(path)[0]
-            for i in range(L):
-                drive = walk = 0
-                dropped = []
-                checked = set()
-
-                for j in range(i+1, L):
-                    drive += self.dist[path[j-1]][path[j]]
-
-                    # cycle detected
-                    if path[i] == path[j]:
-                        # energy needed while taking cycle
-                        eyes = drive * 2/3 + walk
-                        # energy needed without cycle
-                        eno = sum(self.dist[path[i]][h] for h in dropped)
-
-                        if eno < eyes:
-                            path = path[:i] + path[j:]
-                            change = True
-
-                        break
-
-                    # check for dropoffs
-                    if path[j] in dropoffs and path[j] not in checked:
-                        for h in dropoffs[path[j]]:
-                            walk += self.dist[path[j]][h]
-                            dropped.append(h)
-                        checked.add(path[j])
-
-                # for now, break once we take out a cycle.
-                # note: may want to remove "worst" cycle instead (one with highest energy cost)
-                if change:
-                    break
-
-        return path
-
-    # compress cycles that are suboptimal on given path
     # note: prioritizes smaller cycles
-    def compressCycles2(self, path):
+    def compressCycles(self, path):
         change = True
         while change:
             change = False
@@ -227,9 +187,25 @@ class Solver:
 
         return path
 
-    def solve(self, outputfile):
+    def solve(self):
         # to be implemented
         pass
+
+    def output(self, outputfile='output.out', output=True):
+        if output:
+            # calculate dropoff locations
+            dropoffs, _ = self.calcDropoffsAndDist(self.finalPath)
+
+            with open(outputfile, 'w') as f:
+                f.write(' '.join(self.names[i] for i in self.finalPath) + '\n')
+                f.write(str(len(dropoffs.keys())) + '\n')
+                for k in dropoffs.keys():
+                    f.write(self.names[k] + ' ')
+                    f.write(' '.join(self.names[i] for i in dropoffs[k]) + '\n')
+
+    def solveAndOutput(self, outputfile='output.out', output=True):
+        self.solve()
+        self.output(outputfile, output)
 
 
 # Solver that uses 2x MST approximation to calculate output
@@ -259,74 +235,86 @@ class NaiveSolver(Solver):
             path.extend(self.path[route[i]][route[i+1]][1:])
         return path
 
-    def solve(self, outputfile='output.out', output=True):
+    def solve(self):
         self.FloydWarshall()
         MST = self.Prims()
-        path = self.findPath(MST)
+        self.finalPath = self.findPath(MST)
 
-        # calculate final dropoff locations
-        dropoffs, totalDist = self.calcDropoffsAndDist(path)
-
-        # output to file
-        if output:
-            with open(outputfile, 'w') as f:
-                f.write(' '.join(self.names[i] for i in path)+'\n')
-                f.write(str(len(dropoffs.keys()))+'\n')
-                for k in dropoffs.keys():
-                    f.write(self.names[k]+' ')
-                    f.write(' '.join(self.names[i] for i in dropoffs[k])+'\n')
+        # calculate final energy
+        dropoffs, totalDist = self.calcDropoffsAndDist(self.finalPath)
 
         return totalDist
 
 class NaiveSolverCompress(NaiveSolver):
-    def solve(self, outputfile='output.out', output=True):
+    def solve(self):
         self.FloydWarshall()
         MST = self.Prims()
         path = self.findPath(MST)
 
         # check all cycles along path to see if compression is better
         path = self.compressCycles(path)
-
-        # calculate final dropoff locations
-        dropoffs, totalDist = self.calcDropoffsAndDist(path)
-
-        # output to file
-        if output:
-            with open(outputfile, 'w') as f:
-                f.write(' '.join(self.names[i] for i in path)+'\n')
-                f.write(str(len(dropoffs.keys()))+'\n')
-                for k in dropoffs.keys():
-                    f.write(self.names[k]+' ')
-                    f.write(' '.join(self.names[i] for i in dropoffs[k])+'\n')
-
-        return totalDist
-
-class NaiveSolverCompress2(NaiveSolver):
-    def solve(self, outputfile='output.out', output=True):
-        self.FloydWarshall()
-        MST = self.Prims()
-        path = self.findPath(MST)
-
-        # check all cycles along path to see if compression is better
-        path = self.compressCycles2(path)
         # try to remove dropoff locations
         path = self.removeDropoffLocations(path)
         # replace double walked edges
         #path = self.replaceWalkedEdges(path)
 
-        # calculate final dropoff locations
+        self.finalPath = path
+
+        # calculate final energy
         dropoffs, totalDist = self.calcDropoffsAndDist(path)
 
-        # output to file
-        if output:
-            with open(outputfile, 'w') as f:
-                f.write(' '.join(self.names[i] for i in path)+'\n')
-                f.write(str(len(dropoffs.keys()))+'\n')
-                for k in dropoffs.keys():
-                    f.write(self.names[k]+' ')
-                    f.write(' '.join(self.names[i] for i in dropoffs[k])+'\n')
-
         return totalDist
+
+# same as NaiveSolverCompress, except randomize DFS of the MST
+class NaiveSolverCompressRandom(NaiveSolverCompress):
+    def findPath(self, MST):
+        adj = [[] for _ in range(self.L)]
+        for edge in MST:
+            a, b = edge[0], edge[1]
+            adj[a].append(b)
+            adj[b].append(a)
+
+        # randomize adjacency lists
+        for i in range(self.L):
+            random.shuffle(adj[i])
+
+        v = set()
+        v.add(self.start)
+        route = []
+
+        def DFS(i):
+            route.append(i)
+            for j in adj[i]:
+                if j not in v:
+                    v.add(j)
+                    DFS(j)
+
+        DFS(self.start)
+        route.append(self.start)
+        path = [self.start]
+        for i in range(len(route) - 1):
+            path.extend(self.path[route[i]][route[i + 1]][1:])
+        return path
+
+# solver that creates multiple solvers and returns the best one
+class NaiveSolverMultiple:
+    solver = NaiveSolverCompressRandom
+
+    def __init__(self, inputfile, count=5):
+        self.solvers = [self.solver(inputfile) for _ in range(count)]
+
+    def solve(self):
+        dists = [s.solve() for s in self.solvers]
+        self.best = self.solvers[dists.index(min(dists))]
+        return min(dists)
+
+    def output(self, outputfile='output.out', output=True):
+        if output:
+            self.best.output(outputfile, output)
+
+    def solveAndOutput(self, outputfile='output.out', output=True):
+        self.solve()
+        self.output(outputfile, output)
 
 # Solver that uses Christofides' algorithm to calculate output
 # Note: since minimum matching is not optimal, 1.5x bound is not achieved
@@ -418,21 +406,13 @@ class GreedyCristofidesSolver(Solver):
             path.extend(self.path[updated[i]][updated[i+1]][1:])
         return path
 
-    def solve(self, outputfile='output.out', output=True):
+    def solve(self):
         self.FloydWarshall()
         MST = self.Prims()
         MM = self.minMatching(MST)
         ET = self.EulerTour(MST+MM)
-        path = self.findPath(ET)
+        self.finalPath = self.findPath(ET)
 
-        dropoffs, totalDist = self.calcDropoffsAndDist(path)
-
-        if output:
-            with open(outputfile, 'w') as f:
-                f.write(' '.join(self.names[i] for i in path) + '\n')
-                f.write(str(len(dropoffs.keys())) + '\n')
-                for k in dropoffs.keys():
-                    f.write(self.names[k] + ' ')
-                    f.write(' '.join(self.names[i] for i in dropoffs[k]) + '\n')
+        dropoffs, totalDist = self.calcDropoffsAndDist(self.finalPath)
 
         return totalDist
