@@ -4,10 +4,23 @@ from tspy import TSP
 from tspy.solvers import TwoOpt_solver, NN_solver
 import networkx as nx
 
+def output_distance(fin, fout):
+    s = Solver(fin)
+    try:
+        with open(fout) as f:
+            path = list(f.readline().strip().split())
+    except:
+        return 1e18
+    path = [s.names.index(x) for x in path]
+    s.FloydWarshall()
+    _, dist = s.calcDropoffsAndDist(path)
+    return dist
+
 class Solver:
     INF = 1e18
 
     def __init__(self, inputfile):
+        self.inputfile = inputfile
         with open(inputfile, 'r') as f:
             self.L = int(f.readline())
             self.H = int(f.readline())
@@ -195,17 +208,19 @@ class Solver:
         # to be implemented
         pass
 
-    def output(self, outputfile='output.out', output=True):
+    def output(self, outputfile='output.out', output=True, override=False):
         if output:
             # calculate dropoff locations
-            dropoffs, _ = self.calcDropoffsAndDist(self.finalPath)
+            dropoffs, dist = self.calcDropoffsAndDist(self.finalPath)
 
-            with open(outputfile, 'w') as f:
-                f.write(' '.join(self.names[i] for i in self.finalPath) + '\n')
-                f.write(str(len(dropoffs.keys())) + '\n')
-                for k in dropoffs.keys():
-                    f.write(self.names[k] + ' ')
-                    f.write(' '.join(self.names[i] for i in dropoffs[k]) + '\n')
+            currDist = output_distance(self.inputfile, outputfile)
+            if override or dist < currDist:
+                with open(outputfile, 'w') as f:
+                    f.write(' '.join(self.names[i] for i in self.finalPath) + '\n')
+                    f.write(str(len(dropoffs.keys())) + '\n')
+                    for k in dropoffs.keys():
+                        f.write(self.names[k] + ' ')
+                        f.write(' '.join(self.names[i] for i in dropoffs[k]) + '\n')
 
     def solveAndOutput(self, outputfile='output.out', output=True):
         self.solve()
