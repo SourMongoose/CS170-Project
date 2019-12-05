@@ -1,5 +1,6 @@
 import solver
 import os
+import multiprocessing as mp
 
 alg = solver.NaiveSolverMultiple
 
@@ -11,11 +12,11 @@ except:
 
 bad = set([19,47,59,69,80,91,92,119,129,138,143,158,159,176,193,198,215,221,225,243,257,270,280,283,292,302,308,310,312,313,317,323,328,330,333,336,338,339,341,344,346,347,348,349,353,354,355])
 
-for i in range(1,367):
+def solve(i):
     if i%10==0:
         print(i)
     if i in bad:
-        continue
+        return
 
     try:
         g1 = alg('inputs/{0}_50.in'.format(i))
@@ -34,3 +35,8 @@ for i in range(1,367):
         g1.solveAndOutput('outputs/{0}_200.out'.format(i))
     except:
         pass
+
+num_cpu = mp.cpu_count()
+
+with mp.Pool(processes=num_cpu) as p:
+    p.map(solve, list(range(1, 367)))
