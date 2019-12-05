@@ -6,8 +6,11 @@ import networkx as nx
 
 def output_distance(fin, fout):
     s = Solver(fin)
-    with open(fout) as f:
-        path = list(f.readline().strip().split())
+    try:
+        with open(fout) as f:
+            path = list(f.readline().strip().split())
+    except:
+        return 1e18
     path = [s.names.index(x) for x in path]
     s.FloydWarshall()
     _, dist = s.calcDropoffsAndDist(path)
@@ -210,7 +213,8 @@ class Solver:
             # calculate dropoff locations
             dropoffs, dist = self.calcDropoffsAndDist(self.finalPath)
 
-            if override or dist < output_distance(self.inputfile, outputfile):
+            currDist = output_distance(self.inputfile, outputfile)
+            if override or dist < currDist:
                 with open(outputfile, 'w') as f:
                     f.write(' '.join(self.names[i] for i in self.finalPath) + '\n')
                     f.write(str(len(dropoffs.keys())) + '\n')
