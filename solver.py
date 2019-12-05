@@ -2,6 +2,7 @@ import random
 import numpy as np
 from tspy import TSP
 from tspy.solvers import TwoOpt_solver, NN_solver
+import networkx as nx
 
 class Solver:
     INF = 1e18
@@ -355,8 +356,8 @@ class NaiveSolverMultiple:
         self.output(outputfile, output)
 
 # Solver that uses Christofides' algorithm to calculate output
-# Note: since minimum matching is not optimal, 1.5x bound is not achieved
-class GreedyCristofidesSolver(Solver):
+# Note: minimum matching must be optimal to achieve 1.5x bound
+class ChristofidesSolver(Solver):
     # return all vertices of an MST with odd degree
     def oddVertices(self, MST):
         deg = [0] * self.L
@@ -372,26 +373,25 @@ class GreedyCristofidesSolver(Solver):
 
         return odd
 
-    # return an (approximate) minimum matching between odd-degree vertices of given MST
+    # return an minimum matching between odd-degree vertices of given MST
     def minMatching(self, MST):
         odd = self.oddVertices(MST)
 
-        matching = []
-        unmatched = odd[:]
-        while unmatched:
-            mini = unmatched[0]
-            minj = unmatched[1]
-            for i in range(len(unmatched)):
-                for j in range(i+1,len(unmatched)):
-                    if self.dist[unmatched[i]][unmatched[j]] < self.dist[mini][minj]:
-                        mini = unmatched[i]
-                        minj = unmatched[j]
-            #print(unmatched)
-            unmatched.remove(mini)
-            unmatched.remove(minj)
-            matching.append((mini,minj))
+        G = nx.Graph()
+        G.add_nodes_from(odd)
 
-        return matching
+        maxE = 0
+        for u in odd:
+            for v in odd:
+                maxE = max(maxE, self.dist[u][v])
+
+        for i in range(len(odd)):
+            for j in range(i+1, len(odd)):
+                G.add_edge(odd[i],odd[j],weight=maxE-self.dist[odd[i]][odd[j]])
+
+        mm = nx.algorithms.max_weight_matching(G)
+
+        return list(mm)
 
     # return an Eulerian tour of given graph G
     def EulerTour(self, G):
@@ -449,7 +449,29 @@ class GreedyCristofidesSolver(Solver):
         MST = self.Prims()
         MM = self.minMatching(MST)
         ET = self.EulerTour(MST+MM)
-        self.finalPath = self.findPath(ET)
+        path = self.findPath(ET)
+
+        self.finalPath = path
+
+        dropoffs, totalDist = self.calcDropoffsAndDist(self.finalPath)
+
+        return totalDist
+
+# same as above, but uses cycle and dropoff compression
+class ChristofidesSolverCompress(ChristofidesSolver):
+    def solve(self):
+        self.FloydWarshall()
+        MST = self.Prims()
+        MM = self.minMatching(MST)
+        ET = self.EulerTour(MST+MM)
+        path = self.findPath(ET)
+
+        # check all cycles along path to see if compression is better
+        path = self.compressCycles(path)
+        # try to remove dropoff locations
+        path = self.removeDropoffLocations(path)
+
+        self.finalPath = path
 
         dropoffs, totalDist = self.calcDropoffsAndDist(self.finalPath)
 
