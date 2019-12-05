@@ -223,12 +223,28 @@ class TSPYSolver(Solver):
         two_opt = TwoOpt_solver(initial_tour='NN', iter_num=1000000)
         tsp.get_approx_solution(two_opt)
         path = tsp.get_best_solution()
+        path = path[1:] # Trim the start vertex
+        start_idx = path.index(self.start)
+
+        # Make sure the path starts and ends at Soda
+        path = path[start_idx:] + path[:start_idx] + [self.start]
+
+        changed = True
+        # Not the most efficient, but oh well
+        while changed:
+            changed = False
+            for i in range(len(path)-1):
+                u, v = path[i], path[i+1]
+                if self.adj[u][v] == Solver.INF:
+                    # This isn't an edge in the graph, so splice in the shortest path
+                    path[i:i+2] = self.path[u][v]
+                    changed = True
+                    break
+
         # check all cycles along path to see if compression is better
         path = self.compressCycles(path)
         # try to remove dropoff locations
         path = self.removeDropoffLocations(path)
-        # replace double walked edges
-        #path = self.replaceWalkedEdges(path)
 
         self.finalPath = path
 

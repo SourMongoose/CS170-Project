@@ -1,6 +1,5 @@
 import solver
 import os
-import multiprocessing as mp
 import sys, traceback
 
 alg = solver.NaiveSolverMultiple
@@ -11,7 +10,7 @@ try:
 except:
     pass
 
-parallelize = False
+parallelize = True
 
 bad = set([19,47,59,69,80,91,92,119,129,138,143,158,159,176,193,198,215,221,225,243,257,270,280,283,292,302,308,310,312,313,317,323,328,330,333,336,338,339,341,344,346,347,348,349,353,354,355])
 
@@ -46,6 +45,7 @@ def solve(i):
         handle_err(e, i)
 
 if parallelize:
+    import multiprocessing as mp
     num_cpu = mp.cpu_count()
     with mp.Pool(processes=num_cpu) as p:
         p.map(solve, list(range(1, 367)))
