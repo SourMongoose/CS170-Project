@@ -214,6 +214,8 @@ class Solver:
             dropoffs, dist = self.calcDropoffsAndDist(self.finalPath)
 
             currDist = output_distance(self.inputfile, outputfile)
+            if dist < currDist:
+                print("Improved cost from {0} to {1} on input {2}".format(currDist, dist, self.inputfile))
             if override or dist < currDist:
                 with open(outputfile, 'w') as f:
                     f.write(' '.join(self.names[i] for i in self.finalPath) + '\n')
@@ -361,7 +363,7 @@ class NaiveSolverMultiple:
     ranomized_algs = [NaiveSolverCompressRandom]
     deterministic_algs = [TSPYSolver]
 
-    def __init__(self, inputfile, count=5):
+    def __init__(self, inputfile, count=20):
         self.solvers = []
         for alg in self.ranomized_algs:
             self.solvers.extend([alg(inputfile) for _ in range(count)])
@@ -369,13 +371,8 @@ class NaiveSolverMultiple:
             self.solvers.append(alg(inputfile))
 
     def solve(self):
-        print("Beginning solve...")
         dists = [s.solve() for s in self.solvers]
         self.best = self.solvers[dists.index(min(dists))]
-        if isinstance(self.best, TSPYSolver):
-            print("WOOHOO")
-        else:
-            print("DONE")
         return min(dists)
 
     def output(self, outputfile='output.out', output=True):
