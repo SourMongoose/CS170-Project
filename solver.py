@@ -204,6 +204,33 @@ class Solver:
 
         return path
 
+    # try to compress consecutive dropoff locations
+    def compressDropoffPairs(self, path):
+        change = True
+        while change:
+            change = False
+            L = len(path)
+            dropoffs, dist = self.calcDropoffsAndDist(path)
+
+            # list of dropoff locations
+            locs = [[path[i], i] for i in range(L) if (path[i] in dropoffs or i in [0, L-1])]
+
+            for i in range(1, len(locs)-2):
+                prev = locs[i - 1]
+                next = locs[i + 2]
+                newpaths = []
+                for x in range(self.L):
+                    newpath = path[:prev[1]] + self.path[prev[0]][x] + self.path[x][next[0]][1:] + path[next[1]+1:]
+                    newpaths.append(newpath)
+                dists = [self.calcDropoffsAndDist(p)[1] for p in newpaths]
+                minDist = min(dists)
+                if minDist < dist:
+                    path = newpaths[dists.index(minDist)]
+                    change = True
+                    break
+
+        return path
+
     def solve(self):
         # to be implemented
         pass
@@ -260,6 +287,8 @@ class TSPYSolver(Solver):
         path = self.compressCycles(path)
         # try to remove dropoff locations
         path = self.removeDropoffLocations(path)
+        # try to compress dropoff pairs
+        path = self.compressDropoffPairs(path)
 
         self.finalPath = path
 
@@ -315,6 +344,8 @@ class NaiveSolverCompress(NaiveSolver):
         path = self.compressCycles(path)
         # try to remove dropoff locations
         path = self.removeDropoffLocations(path)
+        # try to compress dropoff pairs
+        path = self.compressDropoffPairs(path)
         # replace double walked edges
         #path = self.replaceWalkedEdges(path)
 
