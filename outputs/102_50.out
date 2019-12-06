@@ -1,5 +1,5 @@
-FacultyClub PacificFilmArchive OBrien Library Etcheverry HearstGym BioscienceLibrary Manville Hilgard Cheit Wheeler Durham MartinezCommons SproulPlaza SutardjaDai UniversityHouse Stephens Spieker Warren Mulford Morrison BrainImagingCenter FacultyClub
-20
+FacultyClub LawrenceofScience PacificFilmArchive OBrien Library Etcheverry HearstGym BioscienceLibrary Manville Hilgard Cheit Wheeler Durham MartinezCommons SproulPlaza SutardjaDai UniversityHouse FPF EarthquakeLibrary Spieker Warren Mulford Morrison BrainImagingCenter FacultyClub
+22
 FacultyClub FacultyClub
 BioscienceLibrary BioscienceLibrary
 SutardjaDai SutardjaDai
@@ -7,9 +7,9 @@ Etcheverry Etcheverry
 SproulPlaza SproulPlaza
 Hilgard Hilgard
 BrainImagingCenter StudentUnion BrainImagingCenter
-Stephens EarthquakeLibrary
-UniversityHouse UniversityHouse FPF
-PacificFilmArchive LawrenceofScience PacificFilmArchive
+EarthquakeLibrary EarthquakeLibrary
+UniversityHouse UniversityHouse
+LawrenceofScience LawrenceofScience
 Manville Pimentel Manville
 Mulford Mulford
 Spieker CareerCenter Spieker
@@ -17,6 +17,8 @@ HearstGym HearstGym
 Durham Durham
 OBrien OBrien
 Library Library
+FPF FPF
+PacificFilmArchive PacificFilmArchive
 Morrison Morrison
 Wheeler Wheeler
 Cheit Cheit
