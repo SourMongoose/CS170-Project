@@ -1,8 +1,9 @@
-node6 node22 node48 node9 node12 node7 node47 node1 node15 node23 node21 node27 node39 node4 node44 node24 node18 node6
-17
-node22 node28 node46 node22
+node6 node12 node7 node47 node1 node28 node22 node37 node18 node19 node44 node27 node39 node4 node15 node23 node46 node24 node9 node6
+19
+node28 node28
 node39 node39
-node21 node21
+node46 node46
+node6 node21 node48
 node7 node7
 node12 node12
 node15 node15
@@ -10,10 +11,11 @@ node1 node1
 node47 node47
 node4 node4
 node18 node18
-node6 node19 node37
-node48 node48
+node19 node19
+node37 node37
 node9 node9
 node44 node44
 node23 node23
 node27 node27
 node24 node24
+node22 node22
