@@ -394,8 +394,8 @@ class NaiveSolverMultiple:
     ranomized_algs = [NaiveSolverCompressRandom]
     # deterministic_algs = [TSPYSolver]
     deterministic_algs = []
-    
-    def __init__(self, inputfile, count=20):
+
+    def __init__(self, inputfile, count=5):
         self.solvers = []
         for alg in self.ranomized_algs:
             self.solvers.extend([alg(inputfile) for _ in range(count)])

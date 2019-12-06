@@ -21,22 +21,21 @@ def handle_err(e, i):
     print("-"*60)
 
 def solve(i):
-    if i%10==0:
-        print(i)
+    print(i)
     if i in bad:
         return
 
-    try:
-        g1 = alg('inputs/{0}_50.in'.format(i))
-        g1.solveAndOutput('outputs/{0}_50.out'.format(i))
-    except Exception as e:
-        handle_err(e, i)
+    # try:
+    #     g1 = alg('inputs/{0}_50.in'.format(i))
+    #     g1.solveAndOutput('outputs/{0}_50.out'.format(i))
+    # except Exception as e:
+    #     handle_err(e, i)
 
-    try:
-        g1 = alg('inputs/{0}_100.in'.format(i))
-        g1.solveAndOutput('outputs/{0}_100.out'.format(i))
-    except Exception as e:
-        handle_err(e, i)
+    # try:
+    #     g1 = alg('inputs/{0}_100.in'.format(i))
+    #     g1.solveAndOutput('outputs/{0}_100.out'.format(i))
+    # except Exception as e:
+    #     handle_err(e, i)
 
     try:
         g1 = alg('inputs/{0}_200.in'.format(i))
@@ -46,7 +45,7 @@ def solve(i):
 
 if parallelize:
     import multiprocessing as mp
-    num_cpu = mp.cpu_count()
+    num_cpu = mp.cpu_count() - 4
     with mp.Pool(processes=num_cpu) as p:
         p.map(solve, list(range(1, 367)))
 else:
