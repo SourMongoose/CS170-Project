@@ -392,8 +392,9 @@ class NaiveSolverCompressRandom(NaiveSolverCompress):
 # solver that creates multiple solvers and returns the best one
 class NaiveSolverMultiple:
     ranomized_algs = [NaiveSolverCompressRandom]
-    deterministic_algs = [TSPYSolver]
-
+    # deterministic_algs = [TSPYSolver]
+    deterministic_algs = []
+    
     def __init__(self, inputfile, count=20):
         self.solvers = []
         for alg in self.ranomized_algs:
