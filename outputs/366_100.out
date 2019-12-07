@@ -1,4 +1,4 @@
-Warfield Chilbury Brackcompwang Chelmstanwell Hammerringey Chedberdon Pendingbrook Ketsmith Whitchester Siringwang Chedtree Burglebrough Sudsmith Elmansham Wyborne Cammerrensmoor Wyborne Cambingstoke Suddlecombe Ashfield Millendon Windling Dribblewick Skellingden Barndberbrough Worhall Dribbingworth Worhall Todtree Cicombe Falport Soddlewick Hamsling Hannenmanswick Ashborne Tipwick Cannerthorne Chedderrenswich Ciditch Stainbrough Fulbourne Southbasport Elcompbridge Chiphead Pendingbrook Suddlecastle Faldinghead Pendlewood Falport Suddlecombe Basringney Warfield
+Warfield Chilbury Brackcompwang Chelmstanwell Pendingbrook Ketsmith Whitchester Siringwang Chedtree Burglebrough Sudsmith Elmansham Skelling Suddleborne Cammerrensmoor Wyborne Cambingstoke Suddlecombe Ashfield Millendon Windling Dribblewick Skellingden Barndberbrough Worhall Dribbingworth Worhall Todtree Cicombe Falport Pendlewood Falport Soddlewick Hamsling Hannenmanswick Ashborne Tipwick Cannerthorne Chedderrenswich Southbasport Fulbourne Stainbrough Ciditch Ellingreham Suddlecombe Basringney Warfield
 39
 Stainbrough Worberbrook Stainbrough
 Falport Botherseyworth Falport
@@ -8,16 +8,16 @@ Cambingstoke Cambingstoke
 Basringney Basringney
 Ashfield Ashfield Ketport
 Dribbingworth Dribbingworth Leatherbleside Bastleseyham
-Hammerringey Hammerringey Skelling
+Chelmstanwell Hammerringey Chelmstanwell
+Skelling Skelling
 Ashborne Ashborne
 Chedtree Chedtree Suddleover
 Tipwick Tipwick
-Suddlecombe Suddlecombe Chippingsted Ellingreham
+Suddlecombe Suddlecombe Chippingsted
 Todtree Todtree
-Cammerrensmoor Cammerrensmoor Suddleborne
-Chelmstanwell Chelmstanwell
+Cammerrensmoor Cammerrensmoor
 Warfield Warfield
-Pendingbrook Pendingbrook
+Pendingbrook Pendingbrook Suddlecastle
 Burglebrough Burglebrough
 Siringwang Siringwang
 Chedderrenswich Chedderrenswich
@@ -26,7 +26,7 @@ Worhall Worhall
 Soddlewick Soddlewick
 Skellingden Skellingden
 Barndberbrough Barndberbrough
-Southbasport Southbasport
+Southbasport Southbasport Chiphead
 Windling Windling
 Millendon Millendon
 Chilbury Chilbury
@@ -36,6 +36,6 @@ Elmansham Elmansham
 Hamsling Hamsling
 Cicombe Cicombe
 Ciditch Northall
-Suddlecastle Suddlecastle
+Suddleborne Suddleborne
+Ellingreham Ellingreham
 Hannenmanswick Hannenmanswick
-Chiphead Chiphead

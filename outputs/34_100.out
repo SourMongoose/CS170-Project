@@ -1,13 +1,13 @@
-stop0 stop43 stop19 stop73 stop1 stop94 stop3 stop79 stop29 stop28 stop90 stop0 stop44 stop4 stop27 stop42 stop95 stop12 stop80 stop46 stop15 stop30 stop70 stop2 stop37 stop9 stop1 stop18 stop89 stop38 stop0 stop78 stop81 stop0 stop87 stop77 stop62 stop61 stop50 stop0 stop93 stop75 stop5 stop16 stop33 stop8 stop67 stop60 stop0 stop65 stop99 stop7 stop23 stop35 stop0
-47
+stop0 stop99 stop23 stop87 stop77 stop35 stop44 stop15 stop30 stop8 stop27 stop4 stop46 stop7 stop95 stop12 stop80 stop52 stop18 stop37 stop62 stop78 stop43 stop9 stop75 stop61 stop81 stop29 stop19 stop94 stop1 stop90 stop28 stop5 stop67 stop79 stop2 stop38 stop16 stop50 stop60 stop33 stop65 stop0
+43
 stop44 stop44
 stop15 stop15
 stop19 stop19
 stop95 stop95
 stop29 stop29
-stop70 stop70
+stop99 stop70 stop99 stop42
 stop75 stop75
-stop0 stop0 stop85 stop96 stop52
+stop0 stop0 stop85 stop96 stop93
 stop65 stop65
 stop9 stop9
 stop79 stop79
@@ -15,12 +15,12 @@ stop90 stop90
 stop4 stop4
 stop67 stop67
 stop33 stop33
-stop73 stop73
+stop87 stop73 stop87
 stop1 stop1
 stop80 stop80
+stop52 stop52
 stop81 stop81
 stop2 stop2
-stop93 stop93
 stop16 stop16
 stop35 stop35
 stop28 stop28
@@ -28,15 +28,12 @@ stop61 stop61
 stop94 stop94
 stop12 stop12
 stop43 stop43
-stop89 stop89
+stop23 stop89 stop23
 stop30 stop30
-stop23 stop23
 stop5 stop5
-stop99 stop99
 stop38 stop38
 stop62 stop62
 stop50 stop50
-stop87 stop87
 stop46 stop46
 stop37 stop37
 stop18 stop18
@@ -46,4 +43,3 @@ stop7 stop7
 stop77 stop77
 stop27 stop27
 stop60 stop60
-stop42 stop42

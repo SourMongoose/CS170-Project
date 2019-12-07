@@ -45,9 +45,9 @@ def solve(i):
 
 if parallelize:
     import multiprocessing as mp
-    num_cpu = mp.cpu_count() - 4
+    num_cpu = mp.cpu_count()
     with mp.Pool(processes=num_cpu) as p:
-        p.map(solve, list(range(1, 367)))
+        p.map(solve, list(range(100, 255)))
 else:
     for i in range(1, 367):
         solve(i)
