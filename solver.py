@@ -2,7 +2,6 @@ import random
 import numpy as np
 from tspy import TSP
 from tspy.solvers import TwoOpt_solver, NN_solver
-import networkx as nx
 
 def output_distance(fin, fout):
     s = Solver(fin)

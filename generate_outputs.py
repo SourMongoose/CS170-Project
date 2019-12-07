@@ -25,17 +25,17 @@ def solve(i):
     if i in bad:
         return
 
-    # try:
-    #     g1 = alg('inputs/{0}_50.in'.format(i))
-    #     g1.solveAndOutput('outputs/{0}_50.out'.format(i))
-    # except Exception as e:
-    #     handle_err(e, i)
+    try:
+        g1 = alg('inputs/{0}_50.in'.format(i))
+        g1.solveAndOutput('outputs/{0}_50.out'.format(i))
+    except Exception as e:
+        handle_err(e, i)
 
-    # try:
-    #     g1 = alg('inputs/{0}_100.in'.format(i))
-    #     g1.solveAndOutput('outputs/{0}_100.out'.format(i))
-    # except Exception as e:
-    #     handle_err(e, i)
+    try:
+        g1 = alg('inputs/{0}_100.in'.format(i))
+        g1.solveAndOutput('outputs/{0}_100.out'.format(i))
+    except Exception as e:
+        handle_err(e, i)
 
     try:
         g1 = alg('inputs/{0}_200.in'.format(i))
